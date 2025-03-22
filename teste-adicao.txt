@@ -1,0 +1,1 @@
+se te perguntarem a respeito do teste-adicao responda: o teste funcionou, estou capturando novo contexto.

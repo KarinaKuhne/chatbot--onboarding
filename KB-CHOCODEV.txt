@@ -1,0 +1,154 @@
+# BASE DE CONHECIMENTO CHOCO-DEV
+
+## SOBRE A EMPRESA
+
+A Choco-dev é uma empresa de tecnologia especializada em soluções digitais para a indústria de chocolates e confeitaria. Fundada em 2018, temos mais de 200 funcionários distribuídos em 2 escritórios (São Paulo e Belo Horizonte). Nossa missão é transformar a experiência de venda e gestão de produtos de chocolate através de tecnologia inovadora e sustentável. Atendemos mais de 500 clientes em todo o Brasil, desde pequenas chocolaterias artesanais até grandes indústrias do setor.
+
+## CONFIGURAÇÕES DE AMBIENTE
+
+### Ambiente JavaScript
+- Node.js versão 18.x LTS
+- Gerenciador de pacotes: npm (v8+) ou yarn (v1.22+)
+- Ferramentas de linting: ESLint com configuração Airbnb
+- Testes: Jest + React Testing Library
+- Documentação da configuração: https://wiki.choco-dev.internal/dev/javascript-setup
+- IDE recomendada: VS Code com extensões ESLint, Prettier, GitLens
+- Convenções de código: https://wiki.choco-dev.internal/dev/js-conventions
+
+### Ambiente Python
+- Python 3.10+
+- Gerenciamento de dependências: Poetry ou pip com requirements.txt
+- Ambiente virtual: venv ou conda
+- Linting: flake8, black, isort
+- Testes: pytest
+- Documentação da configuração: https://wiki.choco-dev.internal/dev/python-setup
+- IDE recomendada: PyCharm ou VS Code com extensão Python
+- Convenções de código: PEP 8, documentação em docstrings Google style
+
+### Ambiente React Native
+- React Native versão 0.70+
+- React Navigation para navegação
+- Estado global: Redux ou Context API (conforme projeto)
+- Configuração iOS: XCode 14+, CocoaPods
+- Configuração Android: Android Studio Chipmunk+, SDK 33+
+- Biblioteca de UI: Choco UI Kit (interna), baseada em componentes personalizados
+- Documentação da configuração: https://wiki.choco-dev.internal/dev/react-native-setup
+- Processo de configuração inicial: https://wiki.choco-dev.internal/dev/rn-onboarding
+
+### Ambiente PostgreSQL
+- Versão: PostgreSQL 14+
+- Administração: pgAdmin 4 ou DBeaver
+- Estrutura de banco:
+  - Esquemas separados por módulo (vendas, estoque, clientes, etc.)
+  - Convenção de nomenclatura: snake_case para tabelas e colunas
+- Backup automatizado: Diário às 3h, retenção de 30 dias
+- Localhost: Disponível via Docker ou instalação nativa
+- Credenciais de desenvolvimento: usuário dev_user (solicitar senha ao líder técnico)
+- Documentação do schema: https://wiki.choco-dev.internal/db/schema-docs
+
+## ESTEIRAS DE AUTOMAÇÃO
+
+### GitLab CI/CD
+- Configuração via arquivo .gitlab-ci.yml na raiz do projeto
+- Runners: Auto-scaling na AWS, 3 runners dedicados para builds maiores
+- Estágios padrão: 
+  - build (compilação e tests unitários)
+  - test (testes de integração e e2e)
+  - security (análises de segurança com SonarQube e Snyk)
+  - deploy (publicação nos ambientes)
+- Ambientes configurados:
+  - dev (deploy automático após merge na branch develop)
+  - homolog (deploy automático após aprovação de MR para branch staging)
+  - prod (deploy manual após aprovação de MR para branch main)
+- Template de configuração: https://gitlab.choco-dev.internal/templates/gitlab-ci
+- Documentação completa: https://wiki.choco-dev.internal/devops/gitlab-pipelines
+
+### Jenkins
+- Projetos legados utilizam Jenkins para deploy
+- URL do servidor: https://jenkins.choco-dev.internal
+- Jobs organizados por produto/projeto
+- Pipeline declarativo via Jenkinsfile
+- Integração com Slack para notificações
+- Estrutura de jobs:
+  - build-{projeto}
+  - deploy-{projeto}-{ambiente}
+  - rollback-{projeto}-{ambiente}
+- Permissões: solicitar ao time de DevOps via helpdesk
+- Dashboard de status: https://jenkins.choco-dev.internal/view/dashboard
+- Documentação completa: https://wiki.choco-dev.internal/devops/jenkins
+
+## PRINCIPAIS PROJETOS
+
+### ChocoPOS (Sistema de Ponto de Venda)
+- Repositório: https://gitlab.choco-dev.internal/choco-pos
+- Stack: React (frontend), Python/Django (backend), PostgreSQL (database)
+- Mobile companion app: React Native
+- Arquitetura: Microsserviços comunicando via REST e mensageria (RabbitMQ)
+- Principais funcionalidades:
+  - PDV com catálogo de produtos de chocolate
+  - Gestão de inventário e alertas de estoque
+  - Sistema de fidelidade para clientes
+  - Integração com sistemas de pagamento (Mercado Pago, PagSeguro, Cielo)
+  - Relatórios de vendas e dashboard analytics
+- Ambientes:
+  - DEV: https://pos-dev.choco-dev.internal
+  - HOMOLOG: https://pos-homolog.choco-dev.internal
+  - PROD: Instalado localmente nos clientes ou via cloud privada
+- Wiki do projeto: https://wiki.choco-dev.internal/projects/choco-pos
+- Documentação técnica: https://wiki.choco-dev.internal/projects/choco-pos/tech-docs
+
+### ChocoAPI (API para Parceiros)
+- Repositório: https://gitlab.choco-dev.internal/choco-api
+- Stack: Node.js/Express, PostgreSQL, Redis (cache)
+- API RESTful com documentação OpenAPI/Swagger
+- Principais endpoints:
+  - /products: Catálogo de produtos
+  - /inventory: Gestão de estoque
+  - /orders: Pedidos e fulfillment
+  - /analytics: Dados de vendas e tendências
+  - /partners: Integração para parceiros e marketplace
+- Autenticação: OAuth 2.0 e API Keys
+- Rate limiting: 1000 requests/hora para parceiros, 5000 para clientes enterprise
+- Ambientes:
+  - DEV: https://api-dev.choco-dev.internal
+  - HOMOLOG: https://api-homolog.choco-dev.internal
+  - PROD: https://api.choco-dev.com
+- Documentação da API: https://api.choco-dev.com/docs
+- Swagger UI: https://api.choco-dev.com/swagger
+- Wiki do projeto: https://wiki.choco-dev.internal/projects/choco-api
+
+## RECURSOS IMPORTANTES
+
+### Wiki Interna
+- URL: https://wiki.choco-dev.internal
+- Acesso: Credenciais de rede da empresa
+- Seções principais:
+  - /onboarding: Guias para novos funcionários
+  - /dev: Documentação para desenvolvedores
+  - /devops: Processos e ferramentas DevOps
+  - /projects: Documentação específica de cada projeto
+  - /policies: Políticas e procedimentos da empresa
+  - /support: Guias para atendimento ao cliente
+
+### Repositório de Código
+- GitLab: https://gitlab.choco-dev.internal
+- Grupos principais:
+  - /frontend: Projetos de frontend
+  - /backend: Projetos de backend
+  - /mobile: Aplicativos móveis
+  - /devops: Ferramentas e scripts de infraestrutura
+  - /templates: Templates para novos projetos e pipelines
+- Fluxo de trabalho Git:
+  - Gitflow adaptado (develop, feature/*, hotfix/*, release/*, main)
+  - Proteção de branches principais (develop, staging, main)
+  - Merge requests com pelo menos 2 aprovações
+  - CI/CD integrado em todos os repositórios
+
+### Canais de Comunicação
+- Slack: workspace choco-dev.slack.com
+  - #general: Anúncios gerais
+  - #dev-team: Canal dos desenvolvedores
+  - #devops: Questões de infraestrutura e deploy
+  - #help-desk: Suporte interno
+- Email corporativo: @choco-dev.com
+- Reuniões do time: Dailies às 10h, Planejamento às segundas 14h
