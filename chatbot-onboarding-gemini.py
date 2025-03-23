@@ -5,7 +5,7 @@ import random
 from dotenv import load_dotenv
 from colorama import Fore, Style, init
 
-# Initialize colorama
+# colorama
 init()
 load_dotenv()
 
@@ -71,7 +71,7 @@ class GeminiChatbot:
             with open("./KB-CHOCODEV.txt", "r", encoding="utf-8") as file:
                 return file.read()
         except FileNotFoundError:
-            # Conhecimento base caso o arquivo não exista
+            # Conhecimento base caso não ache o arquivo
             return """
             Stack de Tecnologia: Python, React native, Node.js, PostgreSQL
             Ferramentas DevOps: Docker, Kubernetes, Jenkins, GitLab CI/CD
@@ -113,6 +113,7 @@ class GeminiChatbot:
             print(Fore.PURPLE + f"Erro ao adicionar documento: {str(e)}" + Style.RESET_ALL)
             return False
     
+    # easter egg
     def get_chocolate_fact(self):
         chocolate_facts = [
             "O chocolate contém mais de 600 compostos aromáticos diferentes! 🍫",
@@ -134,121 +135,80 @@ class GeminiChatbot:
         
         return random.choice(chocolate_facts)
     
+    # Resumo
     def generate_interaction_summary(self):
-        """Gera um resumo dinâmico dos 3 assuntos principais usando análise das interações."""
+        """Gera um resumo com parágrafos para cada título de interação na conversa."""
         if len(self.interaction_summary) == 0:
             return "Não houve interações nesta sessão para resumir."
         
         summary = """
-        ╔══════════════════════════════════════════════════════════╗
-        ║    🍫 RESUMO DA NOSSA CONVERSA CHOCOLATUDA 🍫           ║
-        ╚══════════════════════════════════════════════════════════╝
+        ╔══════════════════════════════════════════════════════════════════════════════════════════════════════╗
+        ║    🍫 RESUMO DA NOSSA CONVERSA CHOCOLATUDA 🍫                                                       ║
+        ╚══════════════════════════════════════════════════════════════════════════════════════════════════════╝
         
         """
         
-        # Categorizar as interações para identificar os principais tópicos
-        topics = {
-            "empresa": [],
-            "devops": [],
-            "ambiente": [], 
-            "esteiras": [],
-            "tecnologias": [],
-            "documentação": [],
-            "humor": []
-        }
+        # Limitar para as últimas 3 interações (ou menos se houver menos)
+        interactions_to_show = self.interaction_summary[-self.max_responses:]
         
-        # Coletar mensagens por categoria
-        for interaction in self.interaction_summary:
-            user_message = interaction['user'].lower()
+        # Criação do resumo
+        for i, interaction in enumerate(interactions_to_show):
+            user_input = interaction['user']
             assistant_response = interaction['assistant']
             
-            # Armazenar o par completo de mensagens para cada categoria relevante
-            if any(term in user_message for term in ["empresa", "choco-dev", "choco dev", "sobre a empresa"]):
-                topics["empresa"].append((user_message, assistant_response))
-                
-            if any(term in user_message for term in ["docker", "kubernetes", "devops", "jenkins", "gitlab"]):
-                topics["devops"].append((user_message, assistant_response))
-                
-            if any(term in user_message for term in ["ambiente", "configuração", "setup", "instalar"]):
-                topics["ambiente"].append((user_message, assistant_response))
-                
-            if any(term in user_message for term in ["esteira", "cicd", "ci/cd", "pipeline", "deploy"]):
-                topics["esteiras"].append((user_message, assistant_response))
-                
-            if any(term in user_message for term in ["python", "javascript", "node", "react", "stack", "tecnologia"]):
-                topics["tecnologias"].append((user_message, assistant_response))
-                
-            if any(term in user_message for term in ["documento", "documentação", "wiki", "manual"]):
-                topics["documentação"].append((user_message, assistant_response))
-                
-            if any(term in user_message for term in ["piada", "chocolate", "brincadeira", "curiosidade"]):
-                topics["humor"].append((user_message, assistant_response))
-        
-        # Ordenar tópicos por frequência de menções
-        top_topics = sorted([(topic, len(messages)) for topic, messages in topics.items()], 
-                        key=lambda x: x[1], reverse=True)[:3]
-        
-        # Nomes amigáveis para os tópicos
-        topic_names = {
-            "empresa": "sobre a empresa Choco-dev",
-            "devops": "sobre ferramentas de DevOps",
-            "ambiente": "sobre configuração de ambiente",
-            "esteiras": "sobre processos de CI/CD",
-            "tecnologias": "sobre o stack tecnológico",
-            "documentação": "sobre recursos de documentação",
-            "humor": "sobre curiosidades de chocolate"
-        }
-        
-        # Gerar resumos para os 3 tópicos principais usando o conteúdo das interações
-        summary += "Aqui está um resumo dos principais pontos que discutimos:\n\n"
-        
-        for i, (topic, count) in enumerate(top_topics, 1):
-            if count > 0:  # Só incluir tópicos que realmente foram discutidos
-                # Extrair palavras-chave e frases importantes das interações sobre este tópico
-                key_phrases = []
-                for user_msg, assistant_msg in topics[topic]:
-                    # Extrair frases importantes da resposta do assistente
-                    sentences = [s.strip() for s in assistant_msg.split('.') if len(s.strip()) > 20]
-                    # Selecionar até 2 frases mais informativas (mais longas)
-                    key_sentences = sorted(sentences, key=len, reverse=True)[:2]
-                    key_phrases.extend(key_sentences)
-                
-                # Criar um parágrafo resumido com base nas frases extraídas
-                if key_phrases:
-                    # Selecionar informações mais relevantes
-                    content = ". ".join(key_phrases[:3])
-                    
-                    # Adicionar introdução contextual com base no tópico
-                    intro_phrases = {
-                        "empresa": "Conversamos sobre a estrutura e cultura da Choco-dev",
-                        "devops": "Exploramos as ferramentas DevOps utilizadas pela empresa",
-                        "ambiente": "Discutimos a configuração do ambiente de desenvolvimento",
-                        "esteiras": "Abordamos os processos de CI/CD da Choco-dev",
-                        "tecnologias": "Analisamos o stack tecnológico dos projetos",
-                        "documentação": "Vimos os recursos de documentação disponíveis",
-                        "humor": "Compartilhamos momentos descontraídos com curiosidades"
-                    }
-                    
-                    # Construir parágrafo combinando introdução e conteúdo extraído
-                    paragraph = f"{intro_phrases[topic]}. {content}"
-                    
-                    # Garantir que termine com ponto final e adicionar emoji chocolate
-                    if not paragraph.endswith('.'):
-                        paragraph += '.'
-                    paragraph += ' 🍫'
-                    
-                    summary += f"🍫 **{topic_names[topic].capitalize()}**\n"
-                    summary += f"{paragraph}\n\n"
+            # Determinar o título/tema da interação com base na entrada do usuário
+            if "chocolate" == user_input.strip().lower():
+                interaction_title = "Chocolate"
+                interaction_summary = f"Compartilhei uma curiosidade interessante sobre chocolate: '{assistant_response.split('.')[0]}'. Esta interação trouxe um momento descontraído ao nosso bate-papo, mantendo o tema da Choco-dev de forma divertida."
+            
+            elif any(keyword in user_input.lower() for keyword in ["empresa", "choco", "chocodev", "sobre"]):
+                interaction_title = "Sobre a empresa Choco-dev"
+                interaction_summary = f"Conversamos sobre a Choco-dev, uma empresa especializada em desenvolvimento de software com foco em produtos como ChocoPOV e ChocoAPI. Expliquei detalhes sobre a stack tecnológica, cultura e principais projetos da empresa para ajudar no seu processo de onboarding."
+            
+            elif any(keyword in user_input.lower() for keyword in ["ambiente", "setup", "configurar", "instalar", "python", "linux", "windows"]):
+                interaction_title = "Configuração de ambiente"
+                interaction_summary = f"Forneci um passo a passo para configuração do ambiente de desenvolvimento {'no Linux' if 'linux' in user_input.lower() else 'no Windows' if 'windows' in user_input.lower() else ''}. As instruções incluíram a instalação das ferramentas necessárias, configuração das dependências e preparação do ambiente para trabalhar com os projetos da Choco-dev."
+            
+            elif any(keyword in user_input.lower() for keyword in ["jenkins", "gitlab", "ci/cd", "devops", "pipeline"]):
+                interaction_title = "Ferramentas DevOps"
+                interaction_summary = f"Expliquei sobre as ferramentas DevOps utilizadas na Choco-dev, incluindo detalhes sobre {'Docker' if 'docker' in user_input.lower() else 'Kubernetes' if 'kubernetes' in user_input.lower() else 'Jenkins' if 'jenkins' in user_input.lower() else 'GitLab CI/CD' if any(x in user_input.lower() for x in ['gitlab', 'ci/cd']) else 'ferramentas de automação'}. Detalhei como essas tecnologias são implementadas nos fluxos de trabalho da empresa."
+            
+            elif any(keyword in user_input.lower() for keyword in ["docker", "kubernetes", "eks"]):
+                interaction_title = "Containers"
+                interaction_summary = f"Expliquei sobre Containers que são utilizados na Choco-dev, incluindo detalhes sobre {'Docker' if 'docker' in user_input.lower() else 'Kubernetes' if 'kubernetes' in user_input.lower() else 'ferramentas de gerenciamento de containers'}. Detalhei como essas tecnologias são implementadas nos fluxos de trabalho da empresa."
+            
+            elif any(keyword in user_input.lower() for keyword in ["documento", "documentação", "wiki", "tutorial"]):
+                interaction_title = "Documentação e recursos"
+                interaction_summary = f"Compartilhei informações sobre a documentação disponível na Choco-dev, incluindo a localização da wiki interna e outros recursos importantes. Orientei sobre como acessar e utilizar esses materiais para encontrar respostas para dúvidas comuns durante o processo de desenvolvimento."
+            
+            else:
+                # Caso genérico: extrair um título da entrada do usuário
+                words = user_input.split()
+                if len(words) > 5:
+                    # Tenta extrair palavras-chave da pergunta
+                    interaction_title = " ".join(words[:3]) + "..."
                 else:
-                    # Fallback se não houver conteúdo suficiente
-                    summary += f"🍫 **{topic_names[topic].capitalize()}**\n"
-                    summary += f"Conversamos sobre {topic_names[topic]}, abordando pontos importantes para seu onboarding na Choco-dev. 🍫\n\n"
+                    interaction_title = user_input
+                sentences = [s.strip() for s in assistant_response.split('.') if len(s.strip()) > 10]
+                selected_sentences = sentences[:min(3, len(sentences))]
+                interaction_summary = ". ".join(selected_sentences) + "."
+            
+            # Restrição de tamanho
+            if len(interaction_summary) > 300:
+                words = interaction_summary.split()
+                interaction_summary = " ".join(words[:50]) + "..."
+                if not interaction_summary.endswith('.'):
+                    interaction_summary += '.'
+            
+            # Adicionar interação ao resumo
+            summary += f"🍫 **Interação {i+1}** - {interaction_title}\n"
+            summary += f"Resumo: {interaction_summary}\n\n"
         
         summary += """
-        ╔══════════════════════════════════════════════════════════╗
-        ║    Obrigado por usar a Kit, seja bem vindo a empresa! 🍫 ║
-        ║    O chat será encerrado agora.                          ║
-        ╚══════════════════════════════════════════════════════════╝
+        ╔══════════════════════════════════════════════════════════════════════════════════════════════════════╗
+        ║    Obrigado por usar a Kit, seja bem vindo à empresa! 🍫                                             ║
+        ║    O chat será encerrado agora.                                                                      ║
+        ╚══════════════════════════════════════════════════════════════════════════════════════════════════════╝
         """
         
         return summary
@@ -314,7 +274,7 @@ class GeminiChatbot:
             "parts": [{"text": user_input}]
         })
         
-        # Prepara a requisição para o Gemini
+        # Configs pro Gemini
         request_data = {
             "contents": self.gemini_history,
             "generationConfig": {
@@ -349,7 +309,7 @@ class GeminiChatbot:
                 "parts": [{"text": assistant_message}]
             })
             
-            # Registra esta interação no resumo (limitando o tamanho para não ficar muito grande)
+            # Registra esta interação no resumo com limitação de tamanho
             user_message_short = user_input[:200] + "..." if len(user_input) > 200 else user_input
             
             self.interaction_summary.append({
@@ -357,17 +317,12 @@ class GeminiChatbot:
                 "assistant": assistant_message
             })
             
-            # Incrementa o contador de respostas
+            # Lógica das 3 interações
             self.response_count += 1
-            
-            # Adiciona informação sobre interações restantes
             remaining = self.max_responses - self.response_count
             if remaining > 0:
                 assistant_message += f"\n\n[Você ainda tem {remaining} interação(ões) disponível(is) nesta sessão]"
-            
-            # Verifica se atingiu o limite máximo
             should_exit = self.response_count >= self.max_responses
-            
             return assistant_message, should_exit
             
         except requests.exceptions.RequestException as e:
@@ -410,7 +365,7 @@ class GeminiChatbot:
             response, should_exit = self.send_message(user_input)
             print(Fore.RED + "\nKit: " + Style.RESET_ALL + response)
             
-            # Se atingiu o limite de interações, exibe o resumo e sai automaticamente
+            # Saída
             if should_exit:
                 summary = self.generate_interaction_summary()
                 print(Fore.RED + "\nKit: " + Style.RESET_ALL + summary)
